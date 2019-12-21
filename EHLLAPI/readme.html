@@ -1,0 +1,302 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="KeyWords" content="IBM Access Client Solutions EHLLAPI Bridge">
+   <title>IBM Access Client Solutions EHLLAPI Bridge 6.0.0</title>
+</head>
+
+<body bgcolor="#ffffff" link="#0000ee" vlink="#551a8b" alink="#ff0000">
+<h3 style="color:green;">
+IBM Access Client Solutions EHLLAPI Bridge 6.0.0</h3>October 2016
+<p>Copyright International Business Machines Corporation 2000-2016.
+All rights reserved.
+
+<p>Welcome to the IBM Access Client Solutions EHLLAPI Bridge.
+This tool consists of four newly licensed parts:
+<ul>
+<li>EHLLAPI for Access Client Solutions</li>
+<li>PCSAPI for Access Client Solutions</li>
+<li>Emulation APIs for Access Client Solutions</li>
+<li>Utility Bridge for Access Client Solutions</li>
+</ul>
+
+<h2>This section includes the following:&nbsp;
+<u>EHLLAPI for Access Client Solutions</u> and <u>PCSAPI for Access Client Solutions</u>.</h2>
+<P><FONT size=4>Be sure to read the following license terms before installation:
+</FONT></P>
+<H2></H2>
+<p>This tool allows users to run existing EHLLAPI applications using a variety of interfaces
+to Access Client Solutions emulator sessions. Following are details about the supported
+interfaces and environments and installation instructions, as well as a
+complete list of the known limitations.
+<h2>Supported interfaces</h2>
+<p>Supported interfaces include the following:
+<ul>
+<li>Industry Standard EHLLAPI 32-bit</li>
+<li>IBM Enhanced EHLLAPI 32-bit</li>
+<li>WinHllapi 32-bit</li>
+</ul>
+
+<p>Supported non-standard interfaces include the following:
+<ul>
+<li>IBM Personal Communications PCSAPI Interface</li>
+</ul>
+
+<h2>Supported environments</h2>
+
+<p>Understand the following notes about supported environments:
+
+<p>The EHLLAPI Bridge runs with IBM Access Client Solutions versions 1.1.6 Update 2 or later.
+<p Style="color:green;">Supported environments include  Windows operating systems with Access Client Solutions running in a 32-bit Java virtual machine.</p>
+
+<h2>Installation</h2>
+
+<p>To install the EHLLAPI enablement software on a Windows workstation using
+the InstallShield wizard, complete the following steps:
+<ol>
+<li>The EHLLAPI Bridge installer requires administrative authority, so log in as a member of the Administrators group to perform the installation process.</li>
+<li>Double-click ehllapi.exe to launch the installation wizard.</li>
+<li>After accepting the license agreement, the installer presents a choice of Complete or Custom install types.
+
+  <br>Custom allows the target install location to be changed from the default directory
+    (C:\Program Files (x86)\IBM\EHLLAPI), otherwise, it is the same as Complete.</li>
+
+<li>After the installation completes, click Finish to exit the wizard.</li>
+</ol>
+
+<p>The installed DLL files have version support.
+If you right-click on the DLL file and select the Version tab, you can check the Version and Product level for that DLL file.
+</p>
+<p>You must install the EHLLAPI enablement software on each machine that will
+run native Emulator API programs, unless the system administrator has tools
+that can push the binary files out to the client machines, set their System
+Paths, and update their registries.
+
+<p>Use the commandline argument <code>/plugin=pcs</code> to start a background instance of Access Client Solutions to be controlled by PCSAPI and EHLLAPI calls. Consult
+the GettingStarted document in Access Client Solutions for further details.
+
+
+<h2>Documentation issues</h2>
+<p>
+The EHLLAPI Bridge is meant to be a migration tool or API support extension so
+legacy code is not lost when moving from IBM Personal Communications.
+As such, it is assumed that users of this implementation already
+have licensed copies of the APIs from another product. Full EHLLAPI
+and PCSAPI documentation is available with IBM Personal Communications.
+Should you need further development with EHLLAPI, refer to the documentation delivered with those products. This guide
+identifies all known deviations from the original API behaviors.
+
+<h2>Known limitations</h2>
+<ul>
+<li>Structured Fields - related functions (120-127) are not supported.</li>
+<li>WinHLLAPI Extensions for Asynchronous calls and blocking functions are not supported.</li>
+<li>LockPS(60) / LockWindowServices(61) are not supported (used when multiple applications are connected to the same session).</li>
+<li>StorageManager(17) is supported for WinHllapi only.</li>
+<li>Screen Customizer and the EHLLAPI Bridge are not a supported combination.</li>
+</ul>
+
+<p>If any of the above unsupported options are used by the invoking application,
+a message appears notifying the user that the application might not work
+as expected.
+<p>In addition, the following restrictions apply:
+
+<ul>
+<li>SendFile(90) / ReceiveFile(91) is not supported for 5250 sessions.</li>
+<li>SetSessionParms(9) DBCS-only parameters EAD/NOEAD, SO/NOSO/SPACESO are not supported.</li>
+<li>EXTENDPS / NOEXTENDPS (5250 only) the functions CopyPS,
+  CopyPSToString, CopyStringToPS, CopyStringToField, CopyFieldToString, and
+  SearchField will always return any messages on line 24 (like EXTENDPS), but
+  will never return a 25th line (like NOEXTENDPS).</li>
+<li>The parameters SUPER_WRITE, WRITE_SUPER, WRITE_WRITE, WRITE_READ,
+  WRITE_NONE, and READ_WRITE will be ignored due to the standard EHLLAPI
+  default of only one application can connect to a session at a time.</li>
+<li>The parameter NOBLANK will be ignored and the standard EHLLAPI default of BLANK will always be used.</li>
+<li>Parameters like KEY$xxxx will be ignored and the standard EHLLAPI default of NOKEY will always be used.</li>
+</ul>
+
+<h2>Adding Delays to EHLLAPI Calls</h2>
+<P>Because of the nature of TN5250, there are inherent
+timing-sensitive code paths that are programmed into the EHLLAPI applications.
+When changing systems, or migrating to new emulators, the EHLLAPI application
+sometimes needs to be modified to allow more time for processing. This option
+was added so delays could be added when modifying the application is not
+possible. We recommend modifying the application whenever possible. To enable
+EHLLAPI Delay,&nbsp; you must set the environment variable EHLLAPI_DELAY=nnn,
+where nnn represents duration of delay in increments of ten milliseconds.
+For&nbsp;example, a value of 5 would result in a 50 ms delay <b>before
+each</b> EHLLAPI call is executed.&nbsp;
+
+<p>To set the environment variable, take the following steps:
+
+<ol>
+<li>On the Windows desktop, right-click This PC and select Properties.</li>
+<li>On the left margin Click Advanced system settings.</li>
+<li>On the Advanced tab, click Environment Variables...</li>
+<li>Under System variables, click New...</li>
+<li>In the New System Variable window, type <code>EHLLAPI_DELAY</code>
+  in the Variable name field.</li>
+<li>In the Variable value field, type a decimal number.</li>
+<li>Click OK twice and close the System Properties.</li>
+</ol>
+
+<h2>EHLLAPI Tracing</h2>
+<p>There is tracing that is specific to EHLLAPI. To enable
+tracing, you must set the environment variable EHLLAPI_TRACE=YES. This causes
+the Bridge to log all function calls and parameters to c:\debug.log.
+<p>To set the environment variable, take the following steps:
+<ol>
+<li>On the Windows desktop, right-click This PC and select Properties.</li>
+<li>On the left margin Click Advanced system settings.</li>
+<li>On the Advanced tab, click Environment Variables...</li>
+<li>Under System variables, click New...</li>
+<li>In the New System Variable window, type <code>EHLLAPI_TRACE</code>
+  in the Variable name field.</li>
+<li>In the Variable value field, type <code>YES</code>.</li>
+<li>Click OK twice and close the System Properties.</li>
+</ol>
+<strong>NOTE:</strong> The log file
+is a continuous record, so be sure to delete
+the environment variable or set the value to NO when you are finished
+tracing. The log file does not have a maximum file size.<p><strong>NOTE</strong><strong style="font-weight: 400">:
+Setting the value of environment variable EHLLAPI_TRACE to YES causes the
+logging to occur in the location C:\debug.log by default. However, you can also
+configure the log file name and path from C:\debug.log to another valid location in the
+Windows file system.</strong></p>
+<p><strong style="font-weight: 400">To configure the path: In step 6 above, in
+place of the value YES, type a value of the format <code>path=&lt;complete_log_path_and_filename&gt;</code> in
+the Variable value field. The filename must be <code>debug.log</code>.</strong></p>
+<p><strong style="font-weight: 400">Example: To create debug.log in the folder
+<code>C:\ehllapiLogging\</code> in a Windows filesystem, as part of step 6 above, set the
+EHLLAPI_TRACE variable to <code>path=C:\ehllapiLogging\debug.log</code>
+in the Variable value field. Ensure that the folder exists and
+has adequate write permissions for logging to occur.</strong>
+</p>
+<p><h2>BIDI related</h2></p>Additional Bidi-specific mnemonics were added for compatibility with Hebrew support of MyExtra attachmate emulator.
+<br>
+The mnemonics are:
+<table border="0" width="50%">
+<tr> <td><b>Mnemonic</b></td> <td><b>Function</b></td> </tr>
+<tr> <td><code>&quot;@S@S&quot;</code></td> <td>Screen Reverse</td> </tr>
+<tr> <td><code>&quot;@S@R&quot;</code></td> <td>Field Reverse</td> </tr>
+<tr> <td><code>&quot;@S@A&quot;</code></td> <td>Auto Field Reverse</td> </tr>
+<tr> <td><code>&quot;@S@&lt;&quot;</code></td> <td>Set RTL screen</td> </tr>
+<tr> <td><code>&quot;@S@&gt;&quot;</code></td> <td>Set LTR screen</td> </tr>
+<tr> <td><code>&quot;@Sr&quot;</code></td> <td>Set RTL screen</td> </tr>
+<tr> <td><code>&quot;@Sl&quot;</code></td> <td>Set LTR screen</td> </tr>
+<tr> <td><code>&quot;@Se&quot;</code></td> <td>Set Latin keyboard layout</td> </tr>
+<tr> <td><code>&quot;@Sh&quot;</code></td> <td>Set Hebrew keyboard layout</td> </tr>
+</table>
+
+
+<h2> EAL issues</h2>
+<p>EAL emulation is meant to be a migration tool or API
+support extension so that legacy code is not lost when moving to Access Client Solutions. As
+such, it is assumed that users of this implementation already have licensed
+copies of the APIs from another product. The EAL documentation is available
+with their toolkit.
+Depending on how your program uses the EAL Library, it
+might be necessary to make conversions to your program to use these extensions.
+In addition, some behaviors might differ from the original implementation.</p>
+
+
+<p>EAL programs must link with ATMAPI32.DLL to run. You can link them via the compiler (implicit linkage) or by specific code (explicit
+linkage). Programs written with C, C++, or a similar language and linked
+with the import library ATMAPI32.LIB use implicit linkage. Code written
+using higher level languages such as Microsoft Visual Basic
+or Borland Delphi or C/C++ code that use the Win32 SDK calls to LoadLibrary()
+and GetProcAddress() link explicitly. The major difference is that implicitly
+linked code does not require the APIs to have the same names; however, explicitly
+linked programs do require the APIs to have the same names. This affects how this product is used.
+
+<p>If your program has been linked implicitly by using
+  the EAL API directly and by linking with ATMAPI32.LIB, then your program
+  should run as is and unmodified, assuming that behavioral differences do not
+  affect your logic.
+
+<p>
+If your program is linked explicitly, then some
+modifications using a simple text replace operation will be required.
+
+<p>If the source for your program is available, then you should convert
+it to the new APIs regardless of linkage.
+
+<h2>Tracing</h2>
+<p>There is tracing that is specific to the EAL extension code. To enable
+tracing, you must set the environment variable UTL_DEBUG=YES. This causes
+the Bridge to log all function calls and parameters to utlTrace.log, which
+is saved in the same directory as the application.
+<p>To set the environment variable, take the following steps:
+
+<ol>
+<li>On the Windows desktop, right-click This PC and select Properties.</li>
+<li>On the left margin Click Advanced system settings.</li>
+<li>On the Advanced tab, click Environment Variables...</li>
+<li>Under System variables, click New...</li>
+<li>In the New System Variable window, type <code>UTL_DEBUG</code>
+  in the Variable name field.</li>
+<li>In the Variable value field, type <code>YES</code>.</li>
+<li>Click OK twice and close the System Properties.</li>
+</ol>
+
+<p>The log file is a continuous record, so be sure to delete the environment
+variable when you are finished tracing. The log file has a maximum file size of 16
+MB. After this file size is reached the log wraps to the beginning and
+starts overwriting older data.
+
+<h2>Known behavioral differences</h2>
+<p>Several functions exist that are either exclusive to the competitor
+product, or are impractical to implement at this time. Also, there are
+certain parameters that are product exclusive, so those parameters will
+have default defined behavior. All functions are recognized, but unimplemented
+functions will always return UTL_SUCCESS. The following enumerates known
+differences in behavior and limitations:
+<p>Functions incompatible with Access Client Solutions:
+<ul>
+<li>AllowUpdate - Allows the emulator to paint the PS in response to a host update after a BlockUpdate call has been made.</li>
+<li>BlockUpdate - Prevents the emulator from painting the PS in response to a host update.</li>
+<li>HoldHost - Pevents the Host from updating.</li>
+<li>ResumeHost - Allows host updates after a HoldHost call has been
+made.</li>
+</ul>
+
+<p>Note the following unsupported Attachmate-specific calls:
+<ul>
+<li>UTLGetEmulatorPath - always returns UTL_SUCCESS.</li>
+<li>UTLGetLayoutName - always returns UTL_SUCCESS.</li>
+<li>UTLOpenConfiguration - always returns UTL_SUCCESS.</li>
+<li>UTLCloseConfiguration - always returns UTL_SUCCESS.</li>
+<li>UTLOpenLayout - always returns UTL_SUCCESS.</li>
+<li>UTLExecute - always returns UTL_SUCCESS.</li>
+<li>UTLRun_____Macro - always returns UTL_SUCCESS.</li>
+<li>UTLRun_____MacroAsync - always returns UTL_SUCCESS.</li>
+<li>UTLGetError, UTLShowLastError - always returns UTL_SUCCESS.</li>
+</ul>
+
+<p>Note the following functions with modified or limited behavior:
+<ul>
+<li>UTLGetConfiguration - returns the name of the currently running and API-connected Access Client Solutions configuration.
+<li>UTLGetConnectionStatus - only types UTL_XSTATUS, UTL_CONNECTION, and UTL_ERROR are supported.
+<li>UTLGetSessions,UTLListSession - recognize only a difference between
+configured and running sessions. UTL_GETCONFIGURED and UTL_GETCONFIGUREDCOUNT
+and all other settings will return sessions that are running and are connected to the host.
+<li>UTLGetEmulatorVersion - returns the minimum supported version of Access Client Solutions.
+<li>UTLRunEmulatorMacro - Runs a previously defined Access Client Solutions macro.</li>
+</ul>
+
+
+<h3>Trademarks</h3>
+<p>The following terms are trademarks of International Business Machines
+Corporation in the United States, other countries, or both:
+<p><STRONG>IBM</STRONG>
+<p>Oracle and Java are registered trademarks of Oracle and/or its affiliates.
+<p>Microsoft and Windows are either registered trademarks or trademarks of Microsoft
+Corporation in the United States and/or other countries.
+
+<p>Other company, product, and service names may be
+trademarks or service marks of others.</p>
+
+
+</body>
+</html>
