@@ -11,6 +11,7 @@ import openpyxl as opxl
 #print(hapi.search_str("WORD",0))
 #print(hapi.lock_kb())
 #print(hapi.find_field_length("T ",453))
+#hapi.get_field(pos,feild length)
 #print(hapi._wait())
 # try:
 #     hapi.search_str("WORLD",0)
