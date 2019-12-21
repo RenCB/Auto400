@@ -94,7 +94,7 @@ def processFile():
             hapi.copy_str_to_field(str(dataList["Po_qty"][cunt]),654)
             hapi.send_keys("@T@E@a")
             hapi._wait()
-            print(dataList["MPN"][cunt])
+            #print(dataList["MPN"][cunt])
             cunt = cunt +1
 
     if(hapi.disconnect()==0):
