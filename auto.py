@@ -23,8 +23,10 @@ hapi = Emulator()
 root = tk.Tk()
 root.geometry("300x200")
 
-#获取数据
+#数据存储
 dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"WH":[],"Deli_date":[],"Po_qty":[]}
+
+#加载数据------------------------------
 endFlag = 0
 def loadExcel_Data():
     global endFlag
@@ -33,14 +35,17 @@ def loadExcel_Data():
     wb = opxl.load_workbook(lable['text'],data_only=True)
     ws = wb.active
 
-    selectlist = [2,3,5,6,7,11,13]
+    selectlist = [2,3,5,6,7,11,13] #指定获取某列数据
     row_range=ws[2:ws.max_row]
+
+    #每获取一行数据存储在临时tempArr列表里
     tempArr=[]
     for row in row_range:
         for cell in row:
             if(cell.column in selectlist):
                 tempArr.append(cell.value)
         count = 0
+        #获取当前一行数据后将临时tempArr列表里的数据填入数据存储字典dataList，完成后清空tempArr列表
         for key in dataList:
             dataList[key].append(tempArr[count])
             count = count+1
@@ -71,7 +76,7 @@ def loadExcel_Data():
 def processFile():
     if(hapi.connect()==0):
         print("Connected!")
-        
+        #进入操作流程
         cunt = 0
         while cunt < endFlag:
 
@@ -96,15 +101,15 @@ def processFile():
             hapi._wait()
             #print(dataList["MPN"][cunt])
             cunt = cunt +1
-
+    #完成后关闭API连接
     if(hapi.disconnect()==0):
         print("Disconnected")
-
+#窗口布局
 lable = tk.Label(root,bg="pink",width=55,height=5,text="文件拖放到这里")
 lable1 = tk.Label(root,bg="orange",width=55,height=1,text="未加载文件")
 button = tk.Button(root,text="开始录入",command=processFile)
 
-# 对文件路径
+# 获取文件路径后加载文件数据
 def func(ls):
         filepath = str(ls)[3:-2]
         lable['text'] = filepath
