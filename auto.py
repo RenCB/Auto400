@@ -25,8 +25,10 @@ root.geometry("300x200")
 
 #获取数据
 dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"WH":[],"Deli_date":[],"Po_qty":[]}
-
+endFlag = 0
 def loadExcel_Data():
+    global endFlag
+    lable1['text'] = "开始加载EXCEL数据..."
     #Column (B=2 C=3 E=5 F=6 G=7 K=11 M=13)
     wb = opxl.load_workbook(lable['text'],data_only=True)
     ws = wb.active
@@ -60,19 +62,19 @@ def loadExcel_Data():
         #格式化日月年
         formatDate_Arr.append(dateDay+dateMonth+dateYear) 
     dataList["Deli_date"] = formatDate_Arr
-    print(dataList)
+    #print(dataList)
     formatDate_Arr = [] 
-
-    return ws.max_row
+    lable1['text'] = "数据加载完毕！"
+    endFlag = ws.max_row-1
 
 
 def processFile():
     if(hapi.connect()==0):
         print("Connected!")
-
-        endFlag = loadExcel_Data()-1
+        
         cunt = 0
         while cunt < endFlag:
+
             #screen1
             hapi.copy_str_to_field(str(dataList["Cust"][cunt]),173)
             hapi.send_keys("@T")
@@ -92,26 +94,27 @@ def processFile():
             hapi.copy_str_to_field(str(dataList["Po_qty"][cunt]),654)
             hapi.send_keys("@T@E@a")
             hapi._wait()
-            #print(dataList["MPN"][cunt])
+            print(dataList["MPN"][cunt])
             cunt = cunt +1
 
     if(hapi.disconnect()==0):
         print("Disconnected")
 
 lable = tk.Label(root,bg="pink",width=55,height=5,text="文件拖放到这里")
-lable1 = tk.Label(root,bg="orange",width=55,height=1,text="状态")
+lable1 = tk.Label(root,bg="orange",width=55,height=1,text="未加载文件")
 button = tk.Button(root,text="开始录入",command=processFile)
 
 # 对文件路径
 def func(ls):
         filepath = str(ls)[3:-2]
         lable['text'] = filepath
-
+        loadExcel_Data()
 # windows 挂钩
 windnd.hook_dropfiles(lable.winfo_id(),func)
 lable.pack()
 lable1.pack()
 button.pack()
+
 
 
 
