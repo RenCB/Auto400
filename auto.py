@@ -28,11 +28,12 @@ dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"WH":[],"Deli_date":[],"Po_
 
 #加载数据------------------------------
 endFlag = 0
+filePath =""
 def loadExcel_Data():
     global endFlag
     lable1['text'] = "开始加载EXCEL数据..."
     #Column (B=2 C=3 E=5 F=6 G=7 K=11 M=13)
-    wb = opxl.load_workbook(lable['text'],data_only=True)
+    wb = opxl.load_workbook(filePath,data_only=True)
     ws = wb.active
 
     selectlist = [2,3,5,6,7,11,13] #指定获取某列数据
@@ -67,7 +68,7 @@ def loadExcel_Data():
         #格式化日月年
         formatDate_Arr.append(dateDay+dateMonth+dateYear) 
     dataList["Deli_date"] = formatDate_Arr
-    #print(dataList)
+    print(dataList)
     formatDate_Arr = [] 
     lable1['text'] = "数据加载完毕！"
     endFlag = ws.max_row-1
@@ -111,8 +112,10 @@ button = tk.Button(root,text="开始录入",command=processFile)
 
 # 获取文件路径后加载文件数据
 def func(ls):
-        filepath = str(ls)[3:-2]
-        lable['text'] = filepath
+        global filePath
+        filePath = str(ls)[3:-2]
+        showText = filePath.split("\\")[-1]
+        lable['text'] = showText
         loadExcel_Data()
 # windows 挂钩
 windnd.hook_dropfiles(lable.winfo_id(),func)

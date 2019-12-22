@@ -28,9 +28,10 @@ if(hapi.connect()==0):
     #     hapi.search_str("WORLD",0)
     # except:
     #     print("CODE 24")
-    feildStr = hapi.get_field(453,10)
+    feildStr = str(hapi.get_field(453,10),encoding = "utf-8").strip()
 
-    print(str(feildStr))
+    print(feildStr)
+    print(len(feildStr))
 
     if(hapi.disconnect()==0):
         print("Disconnected")  
