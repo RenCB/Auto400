@@ -71,6 +71,7 @@ def loadExcel_Data():
     print(dataList)
     formatDate_Arr = [] 
     lable1['text'] = "数据加载完毕！"
+    button['state'] = 'normal'
     endFlag = ws.max_row-1
 
 
@@ -108,7 +109,7 @@ def processFile():
 #窗口布局
 lable = tk.Label(root,bg="pink",width=55,height=5,text="文件拖放到这里")
 lable1 = tk.Label(root,bg="orange",width=55,height=1,text="未加载文件")
-button = tk.Button(root,text="开始录入",command=processFile)
+button = tk.Button(root,text="开始录入",state=tk.DISABLED,command=processFile)
 
 # 获取文件路径后加载文件数据
 def func(ls):
