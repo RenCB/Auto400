@@ -114,9 +114,11 @@ def processFile():
             wait_screen("CURRENCY")
 
             # #screen2
-            # #检测单价是否一致不一致塞到errorList 里
+            # #检测单价是否一致不一致塞到errorList 里并且返回screen1
             if(check_uPrice(item)==False):
                 errorList.append(index+2)
+                hapi.send_keys("@c@c")
+                wait_screen("F7:ITEM")
                 continue
 
             hapi.copy_str_to_field(str(dataList["Deli_date"][index]),645)
