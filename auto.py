@@ -4,7 +4,7 @@ import tkinter as tk
 import ctypes
 from EHLLAPI import Emulator
 import openpyxl as opxl
-
+from openpyxl.styles import  PatternFill
 #print(hapi.set_cursor(753))
 #print(hapi.get_field(453,20))
 #print(hapi.get_cursor())
@@ -17,14 +17,17 @@ root.geometry("300x200")
 
 #数据存储
 dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"U_price":[],"Deli_date":[],"Po_qty":[]}
+errorList =[]
 
 #加载数据------------------------------
 filePath =""
+excel_wb={}
 def loadExcel_Data():
+    global excel_wb
     lable1['text'] = "开始加载EXCEL数据..."
     #Column (B=2 C=3 E=5 F=6 I=9 J=10 L=12)
-    wb = opxl.load_workbook(filePath,data_only=True)
-    ws = wb.active
+    excel_wb = opxl.load_workbook(filePath,data_only=True)
+    ws = excel_wb.active
 
     selectlist = [2,3,5,6,9,10,12] #指定获取某列数据
     row_range=ws[2:ws.max_row]
@@ -63,15 +66,15 @@ def loadExcel_Data():
     lable1['text'] = "数据加载完毕！"
     button['state'] = 'normal'
 
-#检测feild 取到得得价格是否喝传入的U_Price 价格一致，一致返回True否则False
-# def check_uPrice(up):
-#     uprice = up
-#     sys_unit_price_str = str(hapi.get_field(664,14))
-#     sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
-#     if(sys_unit_price == uprice ):
-#         return True
-#     else:
-#         return False
+#检测feild 取到得得价格是否和传入的U_Price 价格一致，一致返回True否则False
+def check_uPrice(up):
+    uprice = up
+    sys_unit_price_str = str(hapi.get_field(664,14))
+    sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
+    if(sys_unit_price == uprice ):
+        return True
+    else:
+        return False
 
 def search_str(expect_str):
     try:
@@ -94,44 +97,46 @@ def processFile():
     if(hapi.connect()==0):
         print("Connected!")
         
-        #进入操作流程
-        
+        #进入操作流程       
         for index,item in enumerate(dataList['U_price']):
              
             print("正在处理第{}条".format(index+1))
             #screen1
             
             hapi.copy_str_to_field(str(dataList["Cust"][index]),173)
-            print("处理完毕{}".format(dataList["Cust"][index]))
             hapi.send_keys("@T")
             hapi.copy_str_to_field(str(dataList["Deli"][index]),253)
-            print("处理完毕{}".format(dataList["Deli"][index]))
             hapi.send_keys("@T")
             hapi.copy_str_to_field(str(dataList["MPN"][index]),333)
-            print("处理完毕{}".format(dataList["MPN"][index]))
             hapi.send_keys("@T")
             hapi.copy_str_to_field(str(dataList["PO_num"][index]),359)
-            print("处理完毕{}".format(dataList["PO_num"][index]))
             hapi.send_keys("@E@E")
             wait_screen("CURRENCY")
 
             # #screen2
-            # #检测单价是否一致
-            # # if(check_uPrice(item)==False):
-            # #     continue
+            # #检测单价是否一致不一致塞到errorList 里
+            if(check_uPrice(item)==False):
+                errorList.append(index+2)
+                continue
 
             hapi.copy_str_to_field(str(dataList["Deli_date"][index]),645)
-            print("处理完毕{}".format(dataList["Deli_date"][index]))
             hapi.set_cursor(651)
             hapi.send_keys("@O@O@T")
             hapi.copy_str_to_field(str(dataList["Po_qty"][index]),654)
-            print("处理完毕{}".format(dataList["Po_qty"][index]))
             hapi.send_keys("@T@E@a")
             wait_screen("F7:ITEM")
             print("第{}条处理完毕".format(index+1))
             
-        lable1['text'] = "处理完毕!"   
-        #print(dataList["MPN"][index])
+        if(len(errorList)==0):
+            lable1['text'] = "处理完毕!"
+        else:
+            lable1['text'] = "处理结束,{}条异常!!!".format(len(errorList))  
+        
+    #将跳过的异常errorList 里的元素红色标记
+    for item in errorList:
+        ws1 = excel_wb.active
+        ws1["J{}".format(item)].fill = PatternFill("solid", fgColor="FF0000")
+        excel_wb.save(filePath)
 
     #完成后关闭API连接
     if(hapi.disconnect()==0):
