@@ -1,22 +1,14 @@
 import windnd
+import time
 import tkinter as tk
 import ctypes
 from EHLLAPI import Emulator
 import openpyxl as opxl
 
-#hapi._wait()
 #print(hapi.set_cursor(753))
 #print(hapi.get_field(453,20))
 #print(hapi.get_cursor())
-#print(hapi.search_str("WORD",0))
-#print(hapi.lock_kb())
-#print(hapi.find_field_length("T ",453))
-#hapi.get_field(pos,feild length)
-#print(hapi._wait())
-# try:
-#     hapi.search_str("WORLD",0)
-# except:
-#  print("CODE 24")
+
 # Load DLL into memory.
 hapi = Emulator()
 #窗口
@@ -24,17 +16,17 @@ root = tk.Tk()
 root.geometry("300x200")
 
 #数据存储
-dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"WH":[],"U_price":[],"Deli_date":[],"Po_qty":[]}
+dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"U_price":[],"Deli_date":[],"Po_qty":[]}
 
 #加载数据------------------------------
 filePath =""
 def loadExcel_Data():
     lable1['text'] = "开始加载EXCEL数据..."
-    #Column (B=2 C=3 E=5 F=6 G=7 J=10 K=11 M=13)
+    #Column (B=2 C=3 E=5 F=6 I=9 J=10 L=12)
     wb = opxl.load_workbook(filePath,data_only=True)
     ws = wb.active
 
-    selectlist = [2,3,5,6,7,10,11,13] #指定获取某列数据
+    selectlist = [2,3,5,6,9,10,12] #指定获取某列数据
     row_range=ws[2:ws.max_row]
 
     #每获取一行数据存储在临时tempArr列表里
@@ -71,50 +63,76 @@ def loadExcel_Data():
     lable1['text'] = "数据加载完毕！"
     button['state'] = 'normal'
 
+#检测feild 取到得得价格是否喝传入的U_Price 价格一致，一致返回True否则False
+# def check_uPrice(up):
+#     uprice = up
+#     sys_unit_price_str = str(hapi.get_field(664,14))
+#     sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
+#     if(sys_unit_price == uprice ):
+#         return True
+#     else:
+#         return False
 
-def check_uPrice(up):
-    uprice = up
-    sys_unit_price_str = str(hapi.get_field(664,14))
-    sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
-    if(sys_unit_price == uprice ):
+def search_str(expect_str):
+    try:
+        hapi.search_str(expect_str,0)
         return True
-    else:
+    except:
         return False
 
+def wait_screen(es):
+    print("检测开始{}".format(es))
+    count_s = 0
+    while search_str(es) == False:
+        time.sleep(0.2)
+        print("wait for expect string...")
+        count_s = count_s + 0.2
+        # if()
+    print("Found string!")
 
 def processFile():
     if(hapi.connect()==0):
         print("Connected!")
+        
         #进入操作流程
-        button['state'] = "DISABLED"
+        
         for index,item in enumerate(dataList['U_price']):
+             
+            print("正在处理第{}条".format(index+1))
             #screen1
-            # hapi.copy_str_to_field(str(dataList["Cust"][index]),173)
-            # hapi.send_keys("@T")
-            # hapi.copy_str_to_field(str(dataList["Deli"][index]),253)
-            # hapi.send_keys("@T")
-            # hapi.copy_str_to_field(str(dataList["MPN"][index]),333)
-            # hapi.send_keys("@T")
-            # hapi.copy_str_to_field(str(dataList["PO_num"][index]),359)
-            # hapi.send_keys("@E@E")
-            # hapi._wait()
+            
+            hapi.copy_str_to_field(str(dataList["Cust"][index]),173)
+            print("处理完毕{}".format(dataList["Cust"][index]))
+            hapi.send_keys("@T")
+            hapi.copy_str_to_field(str(dataList["Deli"][index]),253)
+            print("处理完毕{}".format(dataList["Deli"][index]))
+            hapi.send_keys("@T")
+            hapi.copy_str_to_field(str(dataList["MPN"][index]),333)
+            print("处理完毕{}".format(dataList["MPN"][index]))
+            hapi.send_keys("@T")
+            hapi.copy_str_to_field(str(dataList["PO_num"][index]),359)
+            print("处理完毕{}".format(dataList["PO_num"][index]))
+            hapi.send_keys("@E@E")
+            wait_screen("CURRENCY")
 
-            #screen2
-            #检测单价是否一致
-            if(check_uPrice(item)==False):
-                continue
+            # #screen2
+            # #检测单价是否一致
+            # # if(check_uPrice(item)==False):
+            # #     continue
 
-            # hapi.copy_str_to_field(str(dataList["Deli_date"][index]),645)
-            # hapi.set_cursor(651)
-            # hapi.send_keys("@O@O@T")
-            # hapi.copy_str_to_field(str(dataList["Po_qty"][index]),654)
-            # hapi.send_keys("@T@E@a")
-            # hapi._wait()
+            hapi.copy_str_to_field(str(dataList["Deli_date"][index]),645)
+            print("处理完毕{}".format(dataList["Deli_date"][index]))
+            hapi.set_cursor(651)
+            hapi.send_keys("@O@O@T")
+            hapi.copy_str_to_field(str(dataList["Po_qty"][index]),654)
+            print("处理完毕{}".format(dataList["Po_qty"][index]))
+            hapi.send_keys("@T@E@a")
+            wait_screen("F7:ITEM")
+            print("第{}条处理完毕".format(index+1))
+            
+        lable1['text'] = "处理完毕!"   
+        #print(dataList["MPN"][index])
 
-            #处理进度
-            sp_progress = str(int(round(index/len(dataList['U_price']),1)))+"%"
-            lable['text'] = sp_progress
-            print(dataList["MPN"][index])
     #完成后关闭API连接
     if(hapi.disconnect()==0):
         print("Disconnected")
@@ -135,8 +153,6 @@ windnd.hook_dropfiles(lable.winfo_id(),func)
 lable.pack()
 lable1.pack()
 button.pack()
-
-
 
 
 
