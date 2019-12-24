@@ -1,5 +1,6 @@
 import windnd
 import time
+import sys
 import tkinter as tk
 import ctypes
 from EHLLAPI import Emulator
@@ -15,7 +16,7 @@ hapi = Emulator()
 root = tk.Tk()
 root.geometry("300x200")
 
-#数据存储
+#数据存储     B          C         E          F           I             J             L
 dataList = {"Cust":[],"Deli":[],"MPN":[],"PO_num":[],"U_price":[],"Deli_date":[],"Po_qty":[]}
 errorList =[]
 
@@ -39,7 +40,7 @@ def loadExcel_Data():
             if(cell.column in selectlist):
                 tempArr.append(cell.value)
         count = 0
-        #获取当前一行数据后将临时tempArr列表里的数据填入数据存储字典dataList，完成后清空tempArr列表
+        #tempArr列表存储的一行数据依次存入datList里每个key
         for key in dataList:
             dataList[key].append(tempArr[count])
             count = count+1
@@ -70,7 +71,7 @@ def loadExcel_Data():
 def check_uPrice(up):
     uprice = up
     sys_unit_price_str = str(hapi.get_field(664,14))
-    sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
+    sys_unit_price = float(sys_unit_price_str.split('u')[0][2:len(sys_unit_price_str)])
     if(sys_unit_price == uprice ):
         return True
     else:
@@ -85,18 +86,24 @@ def search_str(expect_str):
 
 def wait_screen(es):
     print("检测开始{}".format(es))
-    count_s = 0
+    #count_s = 0
     while search_str(es) == False:
         time.sleep(0.2)
         print("wait for expect string...")
-        count_s = count_s + 0.2
-        # if()
+        #超时退程序
+        #count_s = count_s + 0.2
+        # if(count_s > 10):
+        #   sys.exit("Time out!")
     print("Found string!")
 
 def processFile():
     if(hapi.connect()==0):
         print("Connected!")
-        
+
+        #锁定PS防止其它程序输入
+
+        hapi.lock_kb()
+
         #进入操作流程       
         for index,item in enumerate(dataList['U_price']):
              
@@ -132,13 +139,14 @@ def processFile():
         if(len(errorList)==0):
             lable1['text'] = "处理完毕!"
         else:
-            lable1['text'] = "处理结束,{}条异常!!!".format(len(errorList))  
+            lable1['text'] = "处理结束,{}条异常!!!".format(len(errorList)) 
         
-    #将跳过的异常errorList 里的元素红色标记
+    #将异常元素的EXCEL单元格用红色标记
     for item in errorList:
         ws1 = excel_wb.active
-        ws1["J{}".format(item)].fill = PatternFill("solid", fgColor="FF0000")
-        excel_wb.save(filePath)
+        ws1["I{}".format(item)].fill = PatternFill("solid", fgColor="FF0000")
+        #print(filePath)
+    excel_wb.save(filePath)
 
     #完成后关闭API连接
     if(hapi.disconnect()==0):
@@ -160,7 +168,6 @@ windnd.hook_dropfiles(lable.winfo_id(),func)
 lable.pack()
 lable1.pack()
 button.pack()
-
 
 
 root.mainloop()
