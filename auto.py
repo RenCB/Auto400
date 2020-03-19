@@ -31,7 +31,8 @@ def loadExcel_Data():
     ws = excel_wb.active
 
     selectlist = [2,3,5,6,9,10,12] #指定获取某列数据
-    row_range=ws[2:ws.max_row]
+    #row_range=ws[2:ws.max_row]
+    row_range=ws[2:38]
 
     #每获取一行数据存储在临时tempArr列表里
     tempArr=[]
@@ -45,7 +46,7 @@ def loadExcel_Data():
             dataList[key].append(tempArr[count])
             count = count+1
         tempArr=[]
-
+    print(len(dataList['Deli_date']))
     #处理Deli_date 数据格式
     formatDate_Arr = []
     for item in dataList["Deli_date"]:
@@ -71,7 +72,13 @@ def loadExcel_Data():
 def check_uPrice(up):
     uprice = up
     sys_unit_price_str = str(hapi.get_field(664,14))
-    sys_unit_price = float(sys_unit_price_str.split('u')[0][2:len(sys_unit_price_str)])
+
+    #获取屏幕价格栏数据
+    try:
+        sys_unit_price = float(sys_unit_price_str.split('u')[0][2:len(sys_unit_price_str)])
+    except:
+        sys_unit_price = float(sys_unit_price_str.split('\\')[0][2:len(sys_unit_price_str)])
+    #比较从价格栏获取的和导入的数据
     if(sys_unit_price == uprice ):
         return True
     else:
