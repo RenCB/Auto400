@@ -74,6 +74,10 @@ def check_uPrice(up):
     sys_unit_price_str = str(hapi.get_field(664,14))
 
     #获取屏幕价格栏数据
+# 方法1 截取价格域数字    
+#     sys_unit_price_str = str(hapi.get_field(664,14))
+#     sys_unit_price = float(sys_unit_price_str[2:16])
+# 方法2 截取价格域数字    
     try:
         sys_unit_price = float(sys_unit_price_str.split('u')[0][2:len(sys_unit_price_str)])
     except:
