@@ -30,6 +30,7 @@ if(hapi.connect()==0):
     #     print("CODE 24")
     feildStr = str(hapi.get_field(453,10),encoding = "utf-8").strip()
 
+    
     print(feildStr)
     print(len(feildStr))
 
